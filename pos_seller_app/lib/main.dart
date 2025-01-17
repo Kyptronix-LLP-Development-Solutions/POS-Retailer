@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_seller_app/core/themes/app_theme.dart';
 import 'package:pos_seller_app/core/themes/theme_cubit.dart';
-import 'package:pos_seller_app/pages/BottomNavigation/presentation/bottom_nav_bar.dart';
 
+import 'config/routes/router.dart';
 import 'pages/BottomNavigation/bloc/bottom_nav_bloc.dart';
 
 void main() {
@@ -35,12 +35,12 @@ class MyApp extends StatelessWidget {
               theme = AppTheme.lightTheme;
               break;
           }
-          return MaterialApp(
+          return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'POS Sellers App',
             theme: theme,
             // home: const OnboardingScreen(),
-            home: const BottomNavScreen(),
+            routerConfig: AppRouter.router,
           );
         },
       ),

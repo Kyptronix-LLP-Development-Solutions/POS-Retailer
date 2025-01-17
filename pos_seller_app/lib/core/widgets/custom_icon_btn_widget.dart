@@ -15,7 +15,7 @@ class CustomIconBtnWidget extends StatelessWidget {
     bool isDark = isDarkMode(context);
     return IconButton(
       icon: Icon(
-        Icons.notifications_outlined,
+        icon,
         color: isDark ? DarkThemeColors.onPrimary : LightThemeColors.onPrimary,
       ),
       onPressed: onPressed,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pos_seller_app/core/widgets/custom_text_widgets.dart';
 
 import '../../../../core/themes/app_colors.dart';
-import '../../../Dashboard/presentation/home.dart';
-import '../../signUpScreen/presentation/signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
@@ -215,12 +215,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SellerDashboardScreen(),
-                                ),
-                              );
+                              context.go('/bottomNavScreen');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
@@ -319,20 +314,19 @@ class LoginScreen extends StatelessWidget {
                             TextButton(
                               onPressed: () {
                                 // Navigate to Sign Up
-                                Navigator.push(
+                                /* Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => SignupScreen(),
                                   ),
-                                );
+                                ); */
+                                context.push('/signupScreen');
                               },
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  color: LightThemeColors.accent,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: CustomBodyText(
+                                text: 'Sign Up',
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
                               ),
                             ),
                           ],

@@ -46,6 +46,41 @@ class CustomButtonText extends StatelessWidget {
   }
 }
 
+class CustomBodyText extends StatelessWidget {
+  final String text;
+  final Color? color;
+  final double fontSize;
+  final FontWeight? fontWeight;
+  final TextAlign? textAlign;
+
+  const CustomBodyText({
+    super.key,
+    required this.text,
+    this.color,
+    this.fontSize = 14.0, // Default font size
+    this.fontWeight = FontWeight.normal, // Default font weight
+    this.textAlign,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Determine text color based on theme
+    final textColor = color ??
+        (isDarkMode(context) ? DarkThemeColors.text : LightThemeColors.text);
+
+    return Text(
+      text,
+      style: GoogleFonts.poppins(
+        color: textColor,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+      ),
+      textAlign: textAlign,
+    );
+  }
+}
+
+
 
 /*
 Ah, I see! You want to create **multiple custom text widgets** in a similar structure to the example you provided. Here are some suggestions for naming multiple classes that extend `StatelessWidget` and represent different variations of custom text widgets.

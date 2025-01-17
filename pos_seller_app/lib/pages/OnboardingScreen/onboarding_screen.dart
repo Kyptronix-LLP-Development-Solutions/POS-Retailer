@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/themes/app_colors.dart';
-import '../Authentication/LoginScreen/presentation/login_screen.dart';
 import 'page_view_content.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -177,12 +177,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.pushReplacement(
+                                /* Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => LoginScreen(),
                                   ),
-                                );
+                                ); */
+                                context.go('/loginScreen');
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
