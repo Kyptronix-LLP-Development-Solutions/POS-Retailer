@@ -104,8 +104,8 @@ This document provides a comprehensive guide for developers working on the POS s
 - Support for product modifiers (add-ons, extras)
 
 ### **3.15 Liquor Store Features**
-- Age verification via barcode scan
-- Multipack sales management
+- Age verification via Onfido
+- Sales management
 
 ### **3.16 Barcode Management & Automatic Ordering**
 - Barcode scanning for transactions
@@ -116,10 +116,10 @@ This document provides a comprehensive guide for developers working on the POS s
 - Custom surcharge settings
 
 ### **3.18 Self-Service Kiosk Support**
-- POS kiosk mode for self-checkout
+- POS kiosk mode for self-checkout *
 
 ### **3.19 Accounting & Business Integrations**
-- QuickBooks integration
+- QuickBooks integration *
 - Automated financial reporting
 
 ---
