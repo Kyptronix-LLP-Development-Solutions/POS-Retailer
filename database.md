@@ -1,192 +1,299 @@
----
-
-### **1. Firestore Database Structure**
-
-#### **Root Collections**
-We'll have three major collections to organize the data: `customers`, `sellers`, and `admin`. Under each collection, we can store relevant sub-collections and documents.
+**Full MongoDB collections structure** for **Sell Sync**, including inventory management, API key handling, multi-tenant business management, and all core functionalities.  
 
 ---
 
-### **1.1. Customer Data Structure**
+# **📂 Sell Sync Database Collections (MongoDB)**  
 
-#### **`customers` Collection**
-- **Document ID (UID)**: Unique ID for each customer (Firebase Auth UID or custom ID).
-  - **personal_details**:
-    - `first_name`: String
-    - `last_name`: String
-    - `email`: String
-    - `phone_number`: String
-    - `profile_picture`: URL (optional)
-  - **addresses**: Array of objects (can have multiple addresses)
-    - `address_line_1`: String
-    - `address_line_2`: String (optional)
-    - `city`: String
-    - `state`: String
-    - `zip_code`: String
-    - `country`: String
-    - `is_default`: Boolean (whether it’s the default address)
-  - **loyalty_points**:
-    - `points_balance`: Number (points accumulated by the customer)
-    - `reward_history`: Array of objects
-      - `reward_id`: String (reference to the reward redeemed)
-      - `points_used`: Number
-      - `date_redeemed`: Timestamp
-  - **payment_methods**:
-    - `payment_method_id`: String (reference to stored payment method)
-    - `card_type`: String (e.g., Visa, MasterCard)
-    - `card_number`: String (encrypted)
-    - `expiry_date`: String
-  - **order_history**: Array of order references (each order ID is a reference to the `orders` collection)
-  - **notifications_preferences**:
-    - `order_updates`: Boolean
-    - `promotions`: Boolean
-    - `sales_alerts`: Boolean
-    - `new_arrivals`: Boolean
-  - **cart**: Array of product references (products added to the cart)
-    - `product_id`: String (product reference)
-    - `quantity`: Number
-    - `added_at`: Timestamp
+### **1️⃣ Businesses Collection** (Multi-Tenant Setup)  
+Stores registered businesses using Sell Sync.  
 
-#### **`orders` Collection (for Customer Orders)**
-- **Document ID**: Unique order ID.
-  - `customer_id`: Reference to the customer document
-  - `order_items`: Array of order item objects
-    - `product_id`: String (reference to the product)
-    - `quantity`: Number
-    - `price`: Number
-    - `discount`: Number (if applicable)
-  - `total_price`: Number
-  - `shipping_address`: Reference to the `customers/{customer_id}/addresses/{address_id}`
-  - `order_status`: String (e.g., 'Processing', 'Shipped', 'Delivered')
-  - `payment_method`: String (e.g., 'Credit Card', 'Wallet')
-  - `payment_status`: String (e.g., 'Paid', 'Pending')
-  - `order_date`: Timestamp
-  - `delivery_date`: Timestamp (expected)
-  - `tracking_number`: String (if available)
-  - `is_paid`: Boolean
-  - `loyalty_points_used`: Number (points used in the order)
-  - `order_notes`: String (optional, customer comments)
+```json
+{
+  "_id": ObjectId(),
+  "business_name": "TechMart POS",
+  "business_owner": ObjectId("ref_user_id"),
+  "package_plan": "Premium",  // Free, Standard, Premium
+  "created_at": ISODate(),
+  "subscription_status": "active",  // active, expired, canceled
+  "api_key": "abcd1234efgh5678",  // For API access
+  "settings": {
+    "currency": "USD",
+    "timezone": "America/New_York",
+    "tax_inclusive": true
+  }
+}
+```
+
+✅ **Each business operates in isolation with its own data.**  
+✅ **API keys are unique for each business.**  
 
 ---
 
-### **1.2. Seller Data Structure**
+### **2️⃣ Stores Collection** (Multi-Location Support)  
+Each business can have multiple store locations.  
 
-#### **`sellers` Collection**
-- **Document ID (UID)**: Unique ID for each seller (Firebase Auth UID or custom ID).
-  - **business_details**:
-    - `store_name`: String
-    - `store_logo`: URL (optional)
-    - `email`: String
-    - `phone_number`: String
-    - `business_address`: String
-    - `tax_id`: String (optional)
-  - **product_listings**: Array of product references (IDs of products they are selling)
-  - **inventory**: Array of objects for each product
-    - `product_id`: Reference to a product
-    - `stock_quantity`: Number
-    - `reorder_level`: Number (alert threshold)
-    - `price`: Number
-  - **sales_insights**:
-    - `total_sales`: Number (total sales revenue)
-    - `best_selling_product`: Reference to the product
-    - `monthly_sales`: Array of numbers (sales per month)
-    - `orders_processed`: Number (orders completed by the seller)
-  - **order_history**: Array of references to the `orders` collection (for the seller's processed orders)
-  - **notifications_preferences**:
-    - `order_updates`: Boolean
-    - `customer_messages`: Boolean
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "store_name": "TechMart - Downtown",
+  "location": "123 Main St, NY",
+  "phone": "+1 123-456-7890",
+  "operating_hours": {
+    "open": "09:00 AM",
+    "close": "10:00 PM"
+  },
+  "created_at": ISODate()
+}
+```
 
-#### **`products` Collection (for Seller's Products)**
-- **Document ID**: Unique product ID.
-  - `product_name`: String
-  - `category`: String
-  - `price`: Number
-  - `description`: String
-  - `images`: Array of URLs
-  - `available_stock`: Number
-  - `discount`: Number (optional)
-  - `tags`: Array of strings (e.g., "Electronics", "New Arrival")
-  - `created_at`: Timestamp
-  - `updated_at`: Timestamp
-
-#### **`orders` Collection (for Seller Orders)**
-- **Document ID**: Unique order ID.
-  - `seller_id`: Reference to the seller document
-  - `order_items`: Array of order item objects (products sold)
-    - `product_id`: String (reference to the product)
-    - `quantity`: Number
-    - `price`: Number
-  - `order_status`: String (e.g., 'Processing', 'Shipped', 'Delivered')
-  - `total_price`: Number
-  - `customer_id`: Reference to the customer document
-  - `shipping_address`: Reference to the `customers/{customer_id}/addresses/{address_id}`
-  - `payment_method`: String (e.g., 'Credit Card', 'Wallet')
-  - `order_date`: Timestamp
-  - `delivery_date`: Timestamp
-  - `tracking_number`: String (if available)
-  - `is_paid`: Boolean
-  - `refund_status`: String (e.g., 'Pending', 'Approved', 'Denied')
+✅ **Businesses can manage multiple stores independently.**  
 
 ---
 
-### **1.3. Admin Data Structure**
+### **3️⃣ Users Collection** (Admin & Staff Management)  
+Stores user accounts for each business.  
 
-#### **`admin` Collection**
-- **Document ID (UID)**: Unique admin user ID (Firebase Auth UID).
-  - **personal_details**:
-    - `name`: String
-    - `email`: String
-    - `role`: String (e.g., 'Super Admin', 'Manager')
-    - `profile_picture`: URL (optional)
-  - **permissions**: Array of strings (e.g., ['manage_users', 'view_sales', 'approve_products'])
-  - **last_login**: Timestamp
-  - **notifications_preferences**:
-    - `system_alerts`: Boolean
-    - `new_orders`: Boolean
-    - `product_approvals`: Boolean
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "store_id": ObjectId("ref_store_id"),
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "password_hash": "hashed_password",
+  "role": "admin",  // admin, manager, cashier
+  "permissions": [
+    "manage_inventory",
+    "process_sales",
+    "view_reports"
+  ],
+  "created_at": ISODate()
+}
+```
 
-#### **`logs` Collection (Admin Logs)**
-- **Document ID**: Unique log ID.
-  - `admin_id`: Reference to the admin document
-  - `action`: String (e.g., 'Product Approval', 'User Management')
-  - `timestamp`: Timestamp
-  - `description`: String (a description of the action)
-  - `affected_document_id`: String (ID of the affected document, like `products/{product_id}`)
-
-#### **`products_approval` Collection**
-- **Document ID**: Unique product ID.
-  - `product_id`: Reference to a product
-  - `approval_status`: String (e.g., 'Pending', 'Approved', 'Rejected')
-  - `reviewed_by`: Reference to the admin who reviewed it
-  - `approval_date`: Timestamp
-  - `rejection_reason`: String (optional)
+✅ **Role-Based Access Control (RBAC) for staff permissions.**  
 
 ---
 
-### **2. Firebase Storage**
+### **4️⃣ API Keys Collection** (For Business API Access)  
+Manages API access for businesses.  
 
-For images, product photos, and profile pictures, Firebase Storage will be used.
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "api_key": "xyz9876mnop5432",
+  "status": "active",  // active, revoked
+  "created_at": ISODate(),
+  "last_used": ISODate()
+}
+```
 
-#### **Storage Structure**
-- **`/profiles/{user_id}/profile_picture.jpg`**: Customer or Seller profile images.
-- **`/products/{product_id}/image1.jpg`, `/image2.jpg`, ...**: Product images.
-- **`/banners/{banner_id}/banner_image.jpg`**: Promotional banners or app banners.
-
----
-
-### **3. Firebase Authentication**
-Firebase Authentication will handle customer, seller, and admin user sign-ins. Each user will be identified by their unique Firebase UID, which will be used across the database to link their data.
-
-- **Users Collection**:
-  - `uid`: String (Firebase Auth UID)
-  - `role`: String (e.g., "customer", "seller", "admin")
-  - `email`: String
-  - `phone_number`: String (optional)
+✅ **Each business gets a unique API key to access their data.**  
+✅ **API keys can be revoked if needed.**  
 
 ---
 
-### **Summary**
-- **Customers**: Store profile details, order history, payment methods, and cart data.
-- **Sellers**: Manage product listings, inventory, orders, and sales insights.
-- **Admins**: Oversee user management, product approval, order tracking, and system alerts.
-- **Database Design**: Firebase Firestore's NoSQL structure is flexible, enabling easy querying and real-time syncing.
+### **5️⃣ Products Collection** (Inventory Management)  
+Stores all products for a business.  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "store_id": ObjectId("ref_store_id"),
+  "product_name": "Apple iPhone 15",
+  "sku": "IPH15-256GB",
+  "barcode": "123456789012",
+  "category": "Electronics",
+  "price": 999.99,
+  "stock": 25,
+  "stock_threshold": 5,
+  "supplier_id": ObjectId("ref_supplier_id"),
+  "created_at": ISODate()
+}
+```
+
+✅ **Tracks stock levels, categories, and suppliers.**  
+
+---
+
+### **6️⃣ Stock Movements Collection** (Stock Tracking)  
+Records stock changes (sales, restocks, transfers).  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "store_id": ObjectId("ref_store_id"),
+  "product_id": ObjectId("ref_product_id"),
+  "movement_type": "sale",  // sale, restock, adjustment
+  "quantity": -2,  
+  "handled_by": ObjectId("ref_user_id"),
+  "created_at": ISODate()
+}
+```
+
+✅ **Tracks real-time inventory movements.**  
+
+---
+
+### **7️⃣ Purchase Orders Collection** (Stock Replenishment)  
+Handles automatic and manual stock orders.  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "store_id": ObjectId("ref_store_id"),
+  "supplier_id": ObjectId("ref_supplier_id"),
+  "items": [
+    {
+      "product_id": ObjectId("ref_product_id"),
+      "quantity_ordered": 20,
+      "unit_price": 950.00
+    }
+  ],
+  "order_status": "pending",
+  "expected_delivery": ISODate(),
+  "created_at": ISODate()
+}
+```
+
+✅ **Manages vendor purchases and deliveries.**  
+
+---
+
+### **8️⃣ Suppliers Collection** (Vendor Management)  
+Stores supplier details.  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "supplier_name": "Apple Inc.",
+  "contact_person": "Supplier Manager",
+  "email": "supplier@example.com",
+  "phone": "+1 123 456 7890",
+  "address": "1 Infinite Loop, Cupertino, CA",
+  "created_at": ISODate()
+}
+```
+
+✅ **Links products to suppliers.**  
+
+---
+
+### **9️⃣ Sales Transactions Collection** (POS Transactions)  
+Records all sales.  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "store_id": ObjectId("ref_store_id"),
+  "cashier_id": ObjectId("ref_user_id"),
+  "items": [
+    {
+      "product_id": ObjectId("ref_product_id"),
+      "quantity": 1,
+      "unit_price": 999.99,
+      "total_price": 999.99
+    }
+  ],
+  "payment_method": "Credit Card",
+  "total_amount": 999.99,
+  "transaction_status": "completed",
+  "created_at": ISODate()
+}
+```
+
+✅ **Manages sales, payments, and receipts.**  
+
+---
+
+### **🔟 Customers Collection** (Loyalty & Purchase History)  
+Tracks customer details.  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "name": "Alice Johnson",
+  "phone": "+1 987 654 3210",
+  "email": "alice@example.com",
+  "loyalty_points": 250,
+  "purchase_history": [
+    {
+      "transaction_id": ObjectId("ref_transaction_id"),
+      "date": ISODate(),
+      "amount": 199.99
+    }
+  ],
+  "created_at": ISODate()
+}
+```
+
+✅ **Manages customer loyalty and purchase tracking.**  
+
+---
+
+### **1️⃣1️⃣ Payment Methods Collection** (Payment Processing)  
+Stores available payment methods.  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "method_name": "Credit Card",
+  "provider": "Stripe",
+  "created_at": ISODate()
+}
+```
+
+✅ **Supports various payment methods.**  
+
+---
+
+### **1️⃣2️⃣ Notifications Collection** (Alerts & Updates)  
+Manages system notifications.  
+
+```json
+{
+  "_id": ObjectId(),
+  "business_id": ObjectId("ref_business_id"),
+  "store_id": ObjectId("ref_store_id"),
+  "user_id": ObjectId("ref_user_id"),
+  "message": "Low stock alert for iPhone 15",
+  "status": "unread",
+  "created_at": ISODate()
+}
+```
+
+✅ **Tracks alerts, stock warnings, and reminders.**  
+
+---
+
+## **🚀 Summary: Full Collection List**
+| **Collection**       | **Purpose** |
+|----------------------|------------|
+| **Businesses**      | Manages business registrations. |
+| **Stores**         | Multi-location store management. |
+| **Users**         | Staff accounts & permissions. |
+| **API Keys**      | Business-specific API access. |
+| **Products**     | Inventory tracking. |
+| **Stock Movements** | Stock adjustments. |
+| **Purchase Orders** | Automatic & manual stock replenishment. |
+| **Suppliers**       | Vendor management. |
+| **Sales Transactions** | POS sales processing. |
+| **Customers** | Loyalty & customer profiles. |
+| **Payment Methods** | Payment integration. |
+| **Notifications** | Alerts & system updates. |
+
+---
+
+### **🎯 Now the system is complete!**
+This structure covers **multi-tenant POS, inventory management, payments, customer loyalty, and API access**. ✅  
+
+Let me know if you need modifications! 🚀
