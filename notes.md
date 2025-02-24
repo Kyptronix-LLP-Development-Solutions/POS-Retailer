@@ -113,3 +113,87 @@ The structure I provided for Firebase Firestore is **sufficient** for most use c
 This will make your app scalable, performant, and secure. If you follow best practices around data structure, security, and performance, you should have a robust database design for your Flutter + Firebase project.
 
 If you need further assistance in setting up security rules, performance optimizations, or Firebase Functions, feel free to ask!
+
+
+----
+Here are two detailed prompts that will ensure consistency when using AI to generate code for **Sell Sync's backend** with **FastAPI, MongoDB, Pydantic, and Clean Architecture**.
+
+---
+
+### **📌 Prompt 1: Generate Code for a Specific Collection**
+*(Use this when you want AI to generate code for a specific collection, like `inventory`, `sales`, `customers`, etc.)*
+
+**Prompt:**  
+_I am building a white-label multi-tenant POS system called **Sell Sync**, where businesses can purchase a package, create an account, and manage their stores independently. The backend is built using **FastAPI, MongoDB, Pydantic**, and follows **Clean Code Architecture**._
+
+**System Overview:**  
+- Multi-tenant architecture: Each business has isolated data.  
+- Includes features like inventory management, sales processing, customer management, reporting, etc.  
+- Uses **JWT authentication** and **API keys** for secure access.  
+
+**Architecture Structure:**  
+- **API Layer** → Handles FastAPI routes (placed in `app/api/v1/routers/`)  
+- **Models Layer** → Defines Pydantic models (placed in `app/models/`)  
+- **Repositories Layer** → Handles MongoDB queries (placed in `app/repositories/`)  
+- **Services Layer** → Implements business logic (placed in `app/services/`)  
+
+💡 **Generate code for `{COLLECTION_NAME}` following this structure:**  
+1️⃣ **Pydantic Model:** (Define schema in `app/models/{COLLECTION_NAME}.py`)  
+2️⃣ **Repository Layer:** (MongoDB queries in `app/repositories/{COLLECTION_NAME}_repo.py`)  
+3️⃣ **Service Layer:** (Business logic in `app/services/{COLLECTION_NAME}_service.py`)  
+4️⃣ **API Router:** (Endpoints in `app/api/v1/routers/{COLLECTION_NAME}.py`)  
+
+🔹 The code should follow best practices:  
+- Use **Dependency Injection** for MongoDB connection.  
+- Use **Pydantic models** for request validation.  
+- Implement **async functions** to handle high-performance operations.  
+- Ensure **exception handling & validation** is included.  
+- Maintain **multi-tenancy by isolating business data**.  
+
+⚡ **Generate clean and production-ready code for `{COLLECTION_NAME}` based on these requirements.**  
+
+---
+
+### **📌 Prompt 2: Generate `main.py` & Core Infrastructure Setup**
+*(Use this when setting up the base structure of the FastAPI backend.)*
+
+**Prompt:**  
+_I am developing the backend for **Sell Sync**, a white-label multi-tenant POS system using **FastAPI, MongoDB, Pydantic**, and following **Clean Code Architecture**._
+
+**Key Requirements:**  
+- The project structure follows a **modular architecture**.  
+- MongoDB connection should be handled centrally in `app/core/database.py`.  
+- Authentication uses **JWT tokens** (`app/core/security.py`).  
+- API keys should be implemented for external integrations.  
+- Configurations should be loaded from **`.env`** in `app/core/config.py`.  
+
+💡 **Generate the following core setup files:**  
+1️⃣ `main.py` → The FastAPI entry point with middleware, exception handling, and API registration.  
+2️⃣ `app/core/config.py` → Handles app configuration using environment variables.  
+3️⃣ `app/core/security.py` → Implements JWT authentication & password hashing.  
+4️⃣ `app/core/database.py` → Connects to MongoDB using Motor AsyncIO.  
+
+🔹 The setup should:  
+- Use **dependency injection** for database and authentication.  
+- Implement **CORS middleware** for cross-origin requests.  
+- Include **exception handling** to manage API errors.  
+- Register API routes dynamically from `app/api/v1/routers/`.  
+- Support **scalability & maintainability** following best practices.  
+
+⚡ **Generate clean, structured, and production-ready code for these core setup files.**  
+
+---
+
+### **🛠️ How to Use These Prompts**
+- **Prompt 1** is for generating code for specific collections like `inventory`, `sales`, `customers`, etc.  
+- **Prompt 2** is for setting up the **FastAPI core structure** including authentication, database, and configurations.  
+
+These prompts ensure that **any AI** will generate consistent, well-structured code that follows your **Clean Architecture** approach. 🚀
+
+Would you like me to generate the initial setup (`main.py`, `core/config.py`, etc.) now?
+
+
+
+
+
+
