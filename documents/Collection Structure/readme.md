@@ -187,7 +187,7 @@ Stores discount codes.
 }
 ```
 
-### 9. Taxation
+### 9. Taxation* (how will it be done)
 Handles tax rules for transactions.
 ```json
 {
@@ -208,11 +208,18 @@ Stores the available payment methods.
   "business_id": ObjectId,
   "store_id": ObjectId,
   "sale_id": ObjectId,
-  "amount": "decimal",
-  "method": "credit_card/cash/mobile_wallet",
-  "status": "completed/pending/refunded",
-  "transaction_id": "string",
-  "created_at": "datetime"
+  "amount": 99.99,
+  "method": "credit_card",  // "credit_card", "cash", "mobile_wallet"
+  "status": "completed",  // "completed", "pending", "refunded"
+  "transaction_id": "txn12345abcde",
+  "payment_provider": "Stripe",  // Optional: the payment provider (e.g., "Stripe", "PayPal")
+  "currency": "USD",  // Optional: The currency of the transaction
+  "payment_date": ISODate("2025-02-24T12:30:00Z"),  // Optional: Payment date
+  "refund_amount": 0,  // Optional: The amount refunded (if applicable)
+  "refund_date": ISODate("2025-02-25T12:30:00Z"),  // Optional: Refund date (if applicable)
+  "payment_confirmation": true,  // Optional: True if payment was confirmed
+  "payment_details": "Visa ending in 1234, 12/25",  // Optional: Any additional payment details
+  "created_at": ISODate("2025-02-24T12:00:00Z")
 }
 ```
 
@@ -224,9 +231,21 @@ Handles customer returns.
   "store_id": ObjectId,
   "order_id": ObjectId,
   "refund_amount": 50.00,
-  "status": "processed",
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "status": "processed",  // "pending", "processed", "denied"
+  "return_reason": "Damaged",  // Optional: "Damaged", "Incorrect Item", etc.
+  "refund_method": "original_payment",  // "original_payment", "store_credit", "gift_card"
+  "return_date": ISODate("2025-02-24T12:30:00Z"),  // Optional: Date of return request
+  "return_items": [
+    {
+      "product_id": "LPT123",
+      "quantity": 1,
+      "return_amount": 50.00  // Optional: The amount refunded for this item
+    }
+  ],
+  "processed_by": ObjectId,  // Optional: The staff or admin who processed the return
+  "refund_approval_status": "approved",  // "approved", "pending", "denied"
+  "created_at": ISODate("2025-02-24T12:00:00Z"),
+  "updated_at": ISODate("2025-02-24T12:30:00Z")
 }
 ```
 
@@ -237,9 +256,16 @@ Includes fees such as service charges.
   "_id": ObjectId,
   "store_id": ObjectId,
   "charge_name": "Service Fee",
-  "amount": 5.00,
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "charge_type": "fixed",  // "fixed" or "percentage"
+  "amount": 5.00,  // If charge_type is "fixed", this is the amount. If "percentage", this is the percentage.
+  "applicable_to": "all",  // "all", "items", "shipping", "tax", etc.
+  "start_date": ISODate("2025-02-01T00:00:00Z"),  // Optional: Start date for this charge
+  "end_date": ISODate("2025-02-28T23:59:59Z"),  // Optional: End date for this charge
+  "exempt_from": ["VIP_customers", "promotional_items"],  // Optional: Who is exempt from this charge
+  "charge_scope": "order",  // "order" or "item"
+  "payment_method_restrictions": ["credit_card"],  // Optional: Applies only to specific payment methods
+  "created_at": ISODate("2025-02-01T12:00:00Z"),
+  "updated_at": ISODate("2025-02-01T12:30:00Z")
 }
 ```
 
@@ -249,9 +275,21 @@ Tracks customer rewards.
 {
   "_id": ObjectId,
   "customer_id": ObjectId,
-  "points": 100,
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "points": 100,  // Total points earned by the customer
+  "points_type": "purchase",  // "purchase", "activity", "promotion", etc.
+  "earned_date": ISODate("2025-02-01T00:00:00Z"),  // Date when points were earned
+  "expiry_date": ISODate("2025-12-31T23:59:59Z"),  // Date when points will expire
+  "redemption_history": [
+    {
+      "redeemed_amount": 50,  // Amount of points redeemed
+      "redeemed_for": "discount",  // Redemption for discount, product, etc.
+      "redeemed_date": ISODate("2025-03-01T12:00:00Z")
+    }
+  ],
+  "status": "active",  // "active", "redeemed", "expired"
+  "tier": "Gold",  // Optional: The tier or level in the loyalty program
+  "created_at": ISODate("2025-02-01T12:00:00Z"),
+  "updated_at": ISODate("2025-02-02T12:00:00Z")
 }
 ```
 
@@ -265,8 +303,24 @@ Manages customer details.
   "email": "alice@example.com",
   "phone": "+1234567890",
   "loyalty_points": 150,
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "date_of_birth": ISODate("1990-05-15T00:00:00Z"),  // Optional: Date of birth for age-related offers
+  "address": {
+    "street": "123 Main Street",
+    "city": "Sample City",
+    "state": "State Name",
+    "postal_code": "12345",
+    "country": "Country Name"
+  },  // Optional: Customer address for shipping and billing
+  "status": "active",  // Optional: "active", "inactive", "banned"
+  "marketing_preferences": {
+    "email": true,  // Whether the customer has opted in for email marketing
+    "sms": false    // Whether the customer has opted in for SMS marketing
+  },  // Optional: Marketing preferences
+  "last_purchase_date": ISODate("2025-02-20T12:00:00Z"),  // Optional: Date of the last purchase made by the customer
+  "total_spent": 500.00,  // Optional: Total amount spent by the customer
+  "profile_picture": "https://example.com/profile_picture.jpg",  // Optional: Link to the customer's profile picture
+  "created_at": ISODate("2025-01-15T12:00:00Z"),
+  "updated_at": ISODate("2025-02-20T12:00:00Z")
 }
 ```
 
@@ -277,9 +331,16 @@ Manages custom promotions per store.
   "_id": ObjectId,
   "store_id": ObjectId,
   "discount_name": "Weekend Sale",
-  "discount_value": 15,
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "discount_type": "percentage",  // "percentage", "fixed", "buy_x_get_y"
+  "discount_value": 15,  // Percentage or fixed value based on discount_type
+  "valid_from": ISODate("2025-02-24T00:00:00Z"),  // Start date of the promotion
+  "valid_to": ISODate("2025-02-26T23:59:59Z"),  // End date of the promotion
+  "applies_to": "all",  // "all", "products", "categories", etc.
+  "usage_limit": 100,  // Optional: How many times this promotion can be used (total or per customer)
+  "minimum_purchase": 50.00,  // Optional: Minimum amount required to apply the discount
+  "customer_exclusions": ["vip_customers"],  // Optional: Customer segments excluded from the offer
+  "created_at": ISODate("2025-02-24T12:00:00Z"),
+  "updated_at": ISODate("2025-02-24T12:30:00Z")
 }
 ```
 
@@ -288,12 +349,42 @@ Tracks invoice details.
 ```json
 {
   "_id": ObjectId,
+  "invoice_number": "INV-20250224-001",  // Unique invoice/receipt identifier
   "order_id": ObjectId,
   "customer_id": ObjectId,
-  "total_amount": 120.00,
-  "payment_status": "paid",
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "items": [
+    {
+      "product_id": ObjectId,
+      "product_name": "Laptop",
+      "quantity": 2,
+      "price": 599.99,
+      "total": 1199.98,
+      "tax_rate": 10,  // Tax rate applied to this item
+      "tax_amount": 119.998,  // Tax amount for this item
+      "discount": 50.00  // Discount applied to this item, if any
+    }
+  ],
+  "total_amount": 1200.00,  // Total after applying discounts, taxes, etc.
+  "payment_status": "paid",  // "paid", "unpaid", "partially_paid", "refunded"
+  "payment_method": "credit_card",  // "credit_card", "cash", "mobile_wallet", etc.
+  "billing_address": {
+    "street": "123 Main Street",
+    "city": "Sample City",
+    "state": "State Name",
+    "postal_code": "12345",
+    "country": "Country Name"
+  },
+  "shipping_address": {
+    "street": "123 Main Street",
+    "city": "Sample City",
+    "state": "State Name",
+    "postal_code": "12345",
+    "country": "Country Name"
+  },
+  "due_date": ISODate("2025-03-01T00:00:00Z"),  // Optional: Due date for payment
+  "status": "paid",  // "paid", "unpaid", "partially_paid", "refunded"
+  "created_at": ISODate("2025-02-24T12:00:00Z"),
+  "updated_at": ISODate("2025-02-24T12:30:00Z")
 }
 ```
 
@@ -304,9 +395,16 @@ Handles free gift promotions.
   "_id": ObjectId,
   "store_id": ObjectId,
   "gift_item": "Mug",
-  "min_purchase": 50.00,
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "gift_type": "free_with_minimum_purchase",  // "free_with_minimum_purchase" or "buy_x_get_y"
+  "min_purchase": 50.00,  // Minimum purchase required for the promotion
+  "eligibility": "all",  // "all", "vip_customers", "specific_products"
+  "valid_from": ISODate("2025-02-24T00:00:00Z"),  // Start date of the promotion
+  "valid_to": ISODate("2025-02-28T23:59:59Z"),  // End date of the promotion
+  "usage_limit": 500,  // Optional: Number of times the offer can be used
+  "gift_quantity_available": 200,  // Quantity of gifts available for the promotion
+  "gift_value": 5.00,  // Value of the gift (e.g., value of the mug)
+  "created_at": ISODate("2025-02-24T12:00:00Z"),
+  "updated_at": ISODate("2025-02-24T12:30:00Z")
 }
 ```
 
@@ -317,8 +415,15 @@ Manages external API access.
   "_id": ObjectId,
   "business_id": ObjectId,
   "api_key": "randomly_generated_string",
-  "created_at": ISODate,
-  "updated_at": ISODate
+  "status": "active",  // "active", "inactive", "revoked"
+  "purpose": "third_party_integration",  // "internal", "third_party_integration", etc.
+  "expiration_date": ISODate("2025-12-31T23:59:59Z"),  // Optional: Expiration date for the API key
+  "permissions": [
+    "read", "write", "admin"  // Optional: Defines the level of access granted
+  ],
+  "request_count": 1234,  // Optional: Tracks the number of API calls made
+  "created_at": ISODate("2025-02-24T12:00:00Z"),
+  "updated_at": ISODate("2025-02-24T12:30:00Z")
 }
 ```
 
