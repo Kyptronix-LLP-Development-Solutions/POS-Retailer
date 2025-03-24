@@ -427,5 +427,152 @@ Manages external API access.
 }
 ```
 
+### 19. Employees / Staff Management
+Collection to manage employees working in different stores
+```
+{
+  "_id": ObjectId,
+  "business_id": ObjectId,
+  "store_id": ObjectId,
+  "user_id": ObjectId,
+  "role": "cashier",
+  "permissions": ["process_sales", "view_reports"],
+  "salary": 2000.00,
+  "currency": "USD",
+  "payment_type": "monthly",
+  "commission_rate": 0.05,
+  "overtime_rate": 1.5,
+  "employment_type": "full_time",
+  "hire_date": ISODate,
+  "termination_date": null,
+  "status": "active",
+  "working_hours": {
+    "start": "09:00",
+    "end": "17:00"
+  },
+  "shift_pattern": "morning",
+  "tax_id": "123456789",
+  "national_id": "A12345678",
+  "contact_info": {
+    "email": "user@example.com",
+    "phone": "+1234567890"
+  },
+  "emergency_contact": {
+    "name": "John Doe",
+    "phone": "+9876543210",
+    "relation": "spouse"
+  },
+  "last_login": ISODate,
+  "attendance_record": [
+    {
+      "date": ISODate,
+      "status": "present"
+    }
+  ],
+  "performance_score": 4.5,
+  "biometric_data": {
+    "fingerprint": "hash",
+    "face_scan": "hash"
+  },
+  "created_at": ISODate,
+  "updated_at": ISODate
+}
+```
+
+### 20. Enhanced Sales/Transaction Collection
+
+```json
+{
+  "_id": ObjectId,
+  "business_id": ObjectId,
+  "store_id": ObjectId,
+  "register_id": ObjectId, // If using multiple registers
+  "cashier_id": ObjectId, // Employee handling the sale
+  "customer_id": ObjectId, // Optional, if a registered customer
+  "customer_type": "guest", // "guest", "registered", "wholesale"
+  "order_type": "in_store", // "in_store", "online", "delivery", "pickup", "table_service"
+  "items": [
+    {
+      "product_id": ObjectId,
+      "product_name": "Smartphone X",
+      "sku": "SPX-001", // Stock Keeping Unit for better tracking
+      "barcode": "1234567890123",
+      "quantity": 2,
+      "unit_price": 799.99,
+      "subtotal": 1599.98,
+      "tax": 79.99,
+      "discount": {
+        "type": "fixed", // "fixed" or "percentage"
+        "value": 10.00
+      },
+      "total_after_discount": 1589.98,
+      "total_tax": 79.99,
+      "final_total": 1669.97
+    }
+  ],
+  "subtotal": 1599.98,
+  "total_discount": 10.00,
+  "total_tax": 79.99,
+  "total_amount": 1669.97,
+  "payment": {
+    "method": "credit_card", // "cash", "credit_card", "debit_card", "mobile_payment", "split"
+    "amount_paid": 1669.97,
+    "change_due": 0.00,
+    "split_payment": [
+      {
+        "method": "cash",
+        "amount": 1000.00
+      },
+      {
+        "method": "credit_card",
+        "amount": 669.97
+      }
+    ],
+    "transaction_id": "TXN1234567890", // For payment gateway reference
+    "payment_status": "paid" // "paid", "partially_paid", "pending", "failed", "refunded"
+  },
+  "loyalty": {
+    "points_earned": 10,
+    "points_redeemed": 5
+  },
+  "transaction_status": "completed", // "pending", "cancelled", "refunded"
+  "invoice_number": "INV-20250324-001",
+  "receipt_url": "https://example.com/receipts/INV-20250324-001.pdf",
+  "applied_taxes": [
+    {
+      "tax_name": "VAT",
+      "rate": 5.0,
+      "amount": 79.99
+    }
+  ],
+  "applied_discounts": [
+    {
+      "discount_code": "SPRINGSALE",
+      "type": "percentage",
+      "value": 5.0,
+      "amount": 10.00
+    }
+  ],
+  "created_at": ISODate,
+  "updated_at": ISODate,
+  "refund_details": {
+    "is_refunded": false,
+    "refund_amount": 0.00,
+    "refund_reason": null
+  },
+  "delivery": {
+    "delivery_method": "pickup", // "delivery", "pickup", "curbside"
+    "delivery_status": "ready_for_pickup", // "pending", "shipped", "delivered"
+    "estimated_delivery_time": ISODate,
+    "delivery_address": {
+      "street": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zip_code": "10001",
+      "country": "USA"
+    }
+  }
+}
+```
 ---
 This structure ensures that each business operates independently with its own data and services. Let me know if further refinements are needed! 🚀
