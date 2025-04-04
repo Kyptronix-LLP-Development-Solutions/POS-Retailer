@@ -1,3 +1,4 @@
+# Collection Structure
 ---
 
 ### 📁 `users`
